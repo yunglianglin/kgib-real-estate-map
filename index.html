@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>實價登錄地圖</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { height: 100%; width: 75%; float: left; }
+    #sidebar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 300px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      font-family: Arial, sans-serif;
+    }
+    #sidebar h3 { margin-top: 0; }
+    #sidebar label { display: block; margin-top: 10px; font-weight: bold; }
+    #sidebar input, #sidebar select, #sidebar button {
+      width: 100%; margin-top: 5px; padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="sidebar">
+    <h3>篩選條件</h3>
+    <label>地址搜尋</label>
+    <input type="text" id="address" placeholder="輸入地址...">
+
+    <label>選擇分行</label>
+    <select id="branch">
+      <option value="">-- 選擇分行 --</option>
+      <option value="25.033,121.565">台北信義分行</option>
+      <option value="25.047,121.517">台北車站分行</option>
+      <option value="24.993,121.301">桃園分行</option>
+    </select>
+
+    <label>距離 (公里)</label>
+    <input type="number" id="distance" placeholder="例如：3">
+
+    <button id="filterBtn">套用篩選</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    let map = L.map('map').setView([25.033, 121.565], 12);
+
+    // OSM 底圖
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OSM contributors'
+    }).addTo(map);
+
+    let markersLayer = L.layerGroup().addTo(map);
+    let data = [];
+
+    // 載入實價登錄資料
+    fetch('markers.json')
+      .then(r => r.json())
+      .then(d => { data = d; showMarkers(data); });
+
+    function showMarkers(items) {
+      markersLayer.clearLayers();
+      items.forEach(item => {
+        L.marker([item.lat, item.lng])
+          .addTo(markersLayer)
+          .bindPopup(`
+            <b>地址：</b>${item.address}<br>
+            <b>總價：</b>${item.price.toLocaleString()} 元<br>
+            <b>交易日期：</b>${item.date}<br>
+            <b>單價：</b>${item.unit_price.toLocaleString()} 元/坪
+          `);
+      });
+    }
+
+    // 計算兩點間距離 (公里)
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    }
+
+    // 篩選按鈕事件
+    document.getElementById('filterBtn').addEventListener('click', () => {
+      let branchVal = document.getElementById('branch').value;
+      let dist = parseFloat(document.getElementById('distance').value);
+
+      if (branchVal && dist) {
+        let [lat, lng] = branchVal.split(',').map(Number);
+        let filtered = data.filter(item => 
+          getDistance(lat, lng, item.lat, item.lng) <= dist
+        );
+        map.setView([lat, lng], 14);
+        showMarkers(filtered);
+      } else {
+        showMarkers(data);
+      }
+    });
+  </script>
+</body>
+</html>
