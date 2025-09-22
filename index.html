@@ -220,7 +220,7 @@
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
-    function filterAndShow(lat, lng, dist) {
+    function filterAndShow(lat, lng, dist, branchName = "選擇的分行") {
       if (circle) map.removeLayer(circle);
       if (branchMarker) map.removeLayer(branchMarker);
 
@@ -234,7 +234,7 @@
           iconAnchor: [16, 32],
           popupAnchor: [0, -28]
         })
-      }).addTo(map).bindPopup("選擇的分行").openPopup();
+      }).addTo(map).bindPopup(branchName).openPopup();
 
       // 篩選紅色 marker
       let filtered = data.filter(item => 
@@ -275,7 +275,7 @@
         branchSelect.value = "25.052963,121.549764"; 
         document.getElementById('distance').value = 3;
 
-        filterAndShow(25.052963, 121.549764, 3);
+        filterAndShow(25.052963, 121.549764, 1, "凱基總行");
       });
 
     // 篩選按鈕事件
@@ -284,7 +284,9 @@
       const dist = parseFloat(document.getElementById('distance').value);
       if (branchVal && dist) {
         const [lat, lng] = branchVal.split(',').map(Number);
-        filterAndShow(lat, lng, dist);
+        const branchName = document.getElementById('branch')
+                                  .selectedOptions[0].textContent; // 取得選單名稱
+        filterAndShow(lat, lng, dist, branchName);
       }
     });
 
