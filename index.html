@@ -327,13 +327,13 @@
         filteredData.forEach(item=>{
           csv+=`"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
         });
-        let blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         let url = URL.createObjectURL(blob);
-        let a = document.createElement('a'); 
-        a.href=url; 
-        a.download='篩選結果.csv'; 
-        document.body.appendChild(a); 
-        a.click(); 
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = '篩選結果.csv';
+        document.body.appendChild(a);
+        a.click();
         document.body.removeChild(a);
     });
 
