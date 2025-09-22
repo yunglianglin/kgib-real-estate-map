@@ -190,9 +190,9 @@
 
         marker.bindPopup(`
           <b>地址：</b>${item.address}<br>
-          <b>平均交易總價(近五年)：</b>${Number(item.avg_tot_price).toLocaleString()} 元<br>
-          <b>每坪地價(近五年)：</b>${Number(item.avg_price_pin).toLocaleString()} 元/坪<br>
-          <b>交易總價區間：</b>${Number(item.min_trx_amt).toLocaleString()} ~ ${Number(item.max_trx_amt).toLocaleString()} 元<br>
+          <b>平均交易總價(近五年)：</b>${item.avg_tot_price.toLocaleString()} 元<br>
+          <b>每坪地價(近五年)：</b>${item.avg_price_pin.toLocaleString()} 元/坪<br>
+          <b>交易總價區間：</b>${item.min_trx_amt.toLocaleString()} ~ ${item.max_trx_amt.toLocaleString()} 元<br>
           <b>交易次數(近五年)：</b>${item.trx_cnt_5_yrs} 次<br>
           <b>最新交易日期：</b>${item.lst_trx_dte_5_yrs}<br>
         `);
