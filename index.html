@@ -249,7 +249,7 @@
       if (branchMarker) map.removeLayer(branchMarker);
 
       const minPriceInput = parseFloat(document.getElementById('minPrice').value) || 0;
-      const minPrice = inPriceInput * 10000;
+      const minPrice = minPriceInput * 10000;
 
       // 分行藍色 marker
       branchMarker = L.marker([lat, lng], {
