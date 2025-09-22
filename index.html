@@ -184,8 +184,8 @@
     <label>距離 (公里)</label>
     <input type="number" id="distance" placeholder="例如：3" value="3">
 
-    <label>平均交易總價 ≥</label>
-    <input type="number" id="minPrice" placeholder="例如：10000000">
+    <label>平均交易總價 ≥ (萬元)</label>
+    <input type="number" id="minPrice" placeholder="例如：1000">
 
     <button id="filterBtn">搜尋</button>
     <button id="downloadBtn">下載 搜尋結果</button>
@@ -248,7 +248,8 @@
       if (circle) map.removeLayer(circle);
       if (branchMarker) map.removeLayer(branchMarker);
 
-      const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+      const minPriceInput = parseFloat(document.getElementById('minPrice').value) || 0;
+      const minPrice = inPriceInput * 10000;
 
       // 分行藍色 marker
       branchMarker = L.marker([lat, lng], {
