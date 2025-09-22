@@ -5,86 +5,150 @@
   <title>凱基銀行 豪宅實價登錄地圖</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; }
-    #map { height: 100%; width: 75%; float: left; }
+    body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+    #map { height: 100%; width: 100%; }
+
+    /* 頂部標題列 */
+    #topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    #topbar img { height: 35px; margin-right: 10px; }
+    #title { font-size: 18px; font-weight: bold; }
+    #menuBtn {
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    /* 側邊篩選欄 */
     #sidebar {
       position: absolute;
-      top: 10px;
+      top: 60px;
       right: 10px;
       width: 300px;
       background: white;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      font-family: Arial, sans-serif;
+      display: none; /* 預設隱藏 */
+      z-index: 1000;
     }
     #sidebar h3 { margin-top: 0; }
     #sidebar label { display: block; margin-top: 10px; font-weight: bold; }
-    #sidebar input, #sidebar select, #sidebar button {
+    #sidebar select, #sidebar input, #sidebar button {
       width: 100%; margin-top: 5px; padding: 6px;
     }
   </style>
 </head>
 <body>
+  <div id="topbar">
+    <div style="display: flex; align-items: center;">
+      <img src="logo.jpg" alt="Logo">
+      <div id="title">實價登錄豪宅地圖</div>
+    </div>
+    <button id="menuBtn">☰</button>
+  </div>
+
   <div id="map"></div>
+
   <div id="sidebar">
     <h3>篩選條件</h3>
 
     <label>選擇分行</label>
     <select id="branch">
       <option value="">-- 選擇分行 --</option>
-      <option value="25.1210382,121.7215944">基隆分行</option>
-      <option value="25.0452783,121.5764971">松山分行</option>
-      <option value="25.080456,121.5649951">瑞光分行</option>
-      <option value="25.0411712,121.5548868">忠孝分行</option>
-      <option value="25.0824539,121.5532775">大直分行</option>
-      <option value="25.052963,121.549764">凱基總行</option>
-      <option value="25.054978401985,121.54935302295">敦北分行</option>
-      <option value="25.0316398,121.5482606">敦南分行</option>
-      <option value="25.0516539,121.5436972">城東分行</option>
-      <option value="25.05507,121.5330061">松江分行</option>
-      <option value="25.0330091,121.5321893">大安分行</option>
-      <option value="25.1063286,121.5242319">天母分行</option>
-      <option value="25.0510738,121.5222811">中山分行</option>
-      <option value="24.9840286,121.5387642">新店分行</option>
-      <option value="24.9926237653273,121.515572022948">中和分行</option>
-      <option value="25.0031971,121.5112113">雙和分行</option>
-      <option value="25.0685115,121.4901074">三重分行</option>
-      <option value="25.086672,121.4828735">蘆洲分行</option>
-      <option value="25.024427,121.4675089">板橋分行</option>
-      <option value="24.987861,121.465005">土城分行</option>
-      <option value="25.0490286,121.460327">新莊分行</option>
-      <option value="24.9909839,121.3082984">桃園分行</option>
-      <option value="25.0162507,121.2995099">藝文分行</option>
-      <option value="24.957258,121.2240547">中壢分行</option>
-      <option value="24.7820167,121.0207938">竹科分行</option>
-      <option value="24.8047294,120.9697169">風城分行</option>
-      <option value="24.7975194,120.969624">南大分行</option>
-      <option value="24.8102237,120.9579519">新竹分行</option>
-      <option value="24.5680259,120.824352">苗栗分行</option>
-      <option value="24.2486531,120.7150242">豐原分行</option>
-      <option value="24.1105192,120.6897582">大里分行</option>
-      <option value="24.1521197,120.6686217">台中分行</option>
-      <option value="24.159102,120.6395803">市政分行</option>
-      <option value="23.9583382,120.5664658">員林分行</option>
-      <option value="24.0727349,120.5371178">彰化分行</option>
-      <option value="23.4757561099672,120.444502830685">嘉義分行</option>
-      <option value="22.9657668,120.2941752">歸仁分行</option>
-      <option value="22.9991343,120.234277">永康分行</option>
-      <option value="23.0070653633494,120.218185938238">北門分行</option>
-      <option value="22.9891027,120.210173">東門分行</option>
-      <option value="22.9961746,120.2038375">赤崁分行</option>
-      <option value="22.9979581,120.1992314">台南分行</option>
-      <option value="23.0228904,120.1916418">海東分行</option>
-      <option value="22.6281178,120.3708708">鳳山分行</option>
-      <option value="22.6683862,120.3172476">北高雄分行</option>
-      <option value="22.619533,120.3087674">高雄分行</option>
-      <option value="22.6653243,120.3032502">左營分行</option>
-      <option value="22.6615699,120.2894257">高美館分行</option>
-      <option value="22.6826648,120.4989467">屏東分行</option>
-      <option value="24.6780719,121.7730545">羅東分行</option>
-      <option value="23.9780816,121.6089386">花蓮分行</option>
-      <option value="22.754526,121.1534571">台東分行</option>
+      <optgroup label="基隆">
+        <option value="25.1210382,121.7215944">基隆分行</option>
+      </optgroup>
+      <optgroup label="台北">
+        <option value="25.0452783,121.5764971">松山分行</option>
+        <option value="25.080456,121.5649951">瑞光分行</option>
+        <option value="25.0411712,121.5548868">忠孝分行</option>
+        <option value="25.0824539,121.5532775">大直分行</option>
+        <option value="25.052963,121.549764">凱基總行</option>
+        <option value="25.054978401985,121.54935302295">敦北分行</option>
+        <option value="25.0316398,121.5482606">敦南分行</option>
+        <option value="25.0516539,121.5436972">城東分行</option>
+        <option value="25.05507,121.5330061">松江分行</option>
+        <option value="25.0330091,121.5321893">大安分行</option>
+        <option value="25.1063286,121.5242319">天母分行</option>
+        <option value="25.0510738,121.5222811">中山分行</option>
+      </optgroup>
+      <optgroup label="新北">
+        <option value="24.9840286,121.5387642">新店分行</option>
+        <option value="24.9926237653273,121.515572022948">中和分行</option>
+        <option value="25.0031971,121.5112113">雙和分行</option>
+        <option value="25.0685115,121.4901074">三重分行</option>
+        <option value="25.086672,121.4828735">蘆洲分行</option>
+        <option value="25.024427,121.4675089">板橋分行</option>
+        <option value="24.987861,121.465005">土城分行</option>
+        <option value="25.0490286,121.460327">新莊分行</option>
+      </optgroup>
+      <optgroup label="桃園">
+        <option value="24.9909839,121.3082984">桃園分行</option>
+        <option value="25.0162507,121.2995099">藝文分行</option>
+        <option value="24.957258,121.2240547">中壢分行</option>
+      </optgroup>
+      <optgroup label="新竹">
+        <option value="24.7820167,121.0207938">竹科分行</option>
+        <option value="24.8047294,120.9697169">風城分行</option>
+        <option value="24.7975194,120.969624">南大分行</option>
+        <option value="24.8102237,120.9579519">新竹分行</option>        
+      </optgroup>
+      <optgroup label="苗栗">
+        <option value="24.5680259,120.824352">苗栗分行</option>
+      </optgroup>
+      <optgroup label="台中">
+        <option value="24.2486531,120.7150242">豐原分行</option>
+        <option value="24.1105192,120.6897582">大里分行</option>
+        <option value="24.1521197,120.6686217">台中分行</option>
+        <option value="24.159102,120.6395803">市政分行</option>        
+      </optgroup>
+      <optgroup label="彰化">
+        <option value="23.9583382,120.5664658">員林分行</option>
+        <option value="24.0727349,120.5371178">彰化分行</option>
+      </optgroup>
+      <optgroup label="嘉義">
+        <option value="23.4757561099672,120.444502830685">嘉義分行</option>
+      </optgroup>
+      <optgroup label="台南">
+        <option value="22.9657668,120.2941752">歸仁分行</option>
+        <option value="22.9991343,120.234277">永康分行</option>
+        <option value="23.0070653633494,120.218185938238">北門分行</option>
+        <option value="22.9891027,120.210173">東門分行</option>
+        <option value="22.9961746,120.2038375">赤崁分行</option>
+        <option value="22.9979581,120.1992314">台南分行</option>
+        <option value="23.0228904,120.1916418">海東分行</option>
+      </optgroup>
+      <optgroup label="高雄">
+        <option value="22.6281178,120.3708708">鳳山分行</option>
+        <option value="22.6683862,120.3172476">北高雄分行</option>
+        <option value="22.619533,120.3087674">高雄分行</option>
+        <option value="22.6653243,120.3032502">左營分行</option>
+        <option value="22.6615699,120.2894257">高美館分行</option>
+      </optgroup>
+      <optgroup label="屏東">
+        <option value="22.6826648,120.4989467">屏東分行</option>
+      </optgroup>
+      <optgroup label="宜蘭">
+        <option value="24.6780719,121.7730545">羅東分行</option>
+      </optgroup>
+      <optgroup label="花蓮">
+        <option value="23.9780816,121.6089386">花蓮分行</option>
+      </optgroup>
+      <optgroup label="台東">
+        <option value="22.754526,121.1534571">台東分行</option>
+      </optgroup>
     </select>
 
     <label>距離 (公里)</label>
@@ -95,7 +159,7 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    let map = L.map('map').setView([25.052963,121.549764], 12);
+    let map = L.map('map').setView([25.052963,121.549764], 8); // 台灣中心
 
     // OSM 底圖
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -103,6 +167,7 @@
     }).addTo(map);
 
     let markersLayer = L.layerGroup().addTo(map);
+    let circle, branchMarker;
     let data = [];
 
     // 載入實價登錄資料
@@ -110,19 +175,27 @@
       .then(r => r.json())
       .then(d => { data = d; showMarkers(data); });
 
-    function showMarkers(items) {
+    function showMarkers(items, color = "red") {
       markersLayer.clearLayers();
       items.forEach(item => {
-        L.marker([item.lat, item.lng])
-          .addTo(markersLayer)
-          .bindPopup(`
-            <b>地址：</b>${item.address}<br>
-            <b>平均交易總價(近五年)：</b>${item.avg_tot_price.toLocaleString()} 元<br>
-            <b>每坪地價(近五年)：</b>${item.avg_price_pin.toLocaleString()} 元/坪<br>
-            <b>交易總價區間：</b>${item.max_trx_amt.toLocaleString()} ~ ${item.min_trx_amt.toLocaleString()} 元<br>
-            <b>交易次數(近五年)：</b>${item.trx_cnt_5_yrs} 次<br>
-            <b>最新交易日期：</b>${item.lst_trx_dte_5_yrs}<br>
-          `);
+        let marker = L.marker([item.lat, item.lng], {
+          icon: L.icon({
+            iconUrl: color === "red" ? "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                                     : "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -28]
+          })
+        }).addTo(markersLayer);
+
+        marker.bindPopup(`
+          <b>地址：</b>${item.address}<br>
+          <b>平均交易總價(近五年)：</b>${Number(item.avg_tot_price).toLocaleString()} 元<br>
+          <b>每坪地價(近五年)：</b>${Number(item.avg_price_pin).toLocaleString()} 元/坪<br>
+          <b>交易總價區間：</b>${Number(item.min_trx_amt).toLocaleString()} ~ ${Number(item.max_trx_amt).toLocaleString()} 元<br>
+          <b>交易次數(近五年)：</b>${item.trx_cnt_5_yrs} 次<br>
+          <b>最新交易日期：</b>${item.lst_trx_dte_5_yrs}<br>
+        `);
       });
     }
 
@@ -143,16 +216,46 @@
       let branchVal = document.getElementById('branch').value;
       let dist = parseFloat(document.getElementById('distance').value);
 
+      if (circle) map.removeLayer(circle);
+      if (branchMarker) map.removeLayer(branchMarker);
+
       if (branchVal && dist) {
         let [lat, lng] = branchVal.split(',').map(Number);
+
+        // 分行藍色標記
+        branchMarker = L.marker([lat, lng], {
+          icon: L.icon({
+            iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -28]
+          })
+        }).addTo(map).bindPopup("選擇的分行");
+
+        // 篩選範圍內的紅色標記
         let filtered = data.filter(item => 
           getDistance(lat, lng, item.lat, item.lng) <= dist
         );
+        showMarkers(filtered, "red");
+
+        // 畫圓
+        circle = L.circle([lat, lng], { radius: dist * 1000, color: "blue", fillOpacity: 0.1 });
+        circle.addTo(map);
+
         map.setView([lat, lng], 14);
-        showMarkers(filtered);
+
+        if (filtered.length === 0) {
+          alert("此範圍內無實價登錄資料");
+        }
       } else {
-        showMarkers(data);
+        showMarkers(data, "red");
       }
+    });
+
+    // 側邊欄顯示/隱藏
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      let sidebar = document.getElementById('sidebar');
+      sidebar.style.display = sidebar.style.display === "none" ? "block" : "none";
     });
   </script>
 </body>
