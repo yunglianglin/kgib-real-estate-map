@@ -188,7 +188,7 @@
     <input type="number" id="minPrice" placeholder="例如：10000000">
 
     <button id="filterBtn">搜尋</button>
-    <button id="downloadBtn">下載 Excel</button>
+    <button id="downloadBtn">下載 搜尋結果</button>
 
 
   <h3>搜尋結果概要</h3>
@@ -207,6 +207,7 @@
     let markersLayer = L.layerGroup().addTo(map);
     let circle, branchMarker;
     let data = [];
+    let filteredData = []; 
 
     // 顯示 marker 函式
     function showMarkers(items, color = "red") {
@@ -266,6 +267,9 @@
       );
       showMarkers(filtered, "red");
 
+       // 篩選按鈕事件中加入 filteredData = filtered
+      filteredData = filtered;
+
       // 畫圓
       circle = L.circle([lat, lng], { radius: dist * 1000, color: "blue", fillOpacity: 0.1 }).addTo(map);
 
@@ -312,17 +316,25 @@
         filterAndShow(lat, lng, dist, branchName);
       }
     });
-    // 下載 Excel (CSV)
+     // 3️⃣ 新增下載按鈕事件：將 filteredData 轉成 CSV 並觸發下載
     document.getElementById('downloadBtn').addEventListener('click', () => {
-          if(!filteredData || filteredData.length===0){ alert("目前沒有篩選結果可下載"); return; }
-          let csv = "地址,平均交易總價,每坪地價,交易總價區間,交易次數,最新交易日期\n";
-          filteredData.forEach(item=>{
-            csv+=`"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
-          });
-          let blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-          let url = URL.createObjectURL(blob);
-          let a = document.createElement('a'); a.href=url; a.download='篩選結果.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        if(!filteredData || filteredData.length===0){
+          alert("目前沒有篩選結果可下載"); 
+          return; 
+        }
+        let csv = "地址,平均交易總價,每坪地價,交易總價區間,交易次數,最新交易日期\n";
+        filteredData.forEach(item=>{
+          csv+=`"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
         });
+        let blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a'); 
+        a.href=url; 
+        a.download='篩選結果.csv'; 
+        document.body.appendChild(a); 
+        a.click(); 
+        document.body.removeChild(a);
+    });
 
     // 側邊欄顯示/隱藏
     document.getElementById('menuBtn').addEventListener('click', () => {
