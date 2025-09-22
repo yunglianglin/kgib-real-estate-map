@@ -48,6 +48,15 @@
     #sidebar select, #sidebar input, #sidebar button {
       width: 100%; margin-top: 5px; padding: 6px;
     }
+
+    /* 搜尋結果概要 */
+    #summary {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f7f7f7;
+      border-radius: 5px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -152,16 +161,22 @@
     </select>
 
     <label>距離 (公里)</label>
-    <input type="number" id="distance" placeholder="例如：3">
+    <input type="number" id="distance" placeholder="例如：3" value="3">
+
+    <label>平均交易總價 ≥</label>
+    <input type="number" id="minPrice" placeholder="例如：10000000">
 
     <button id="filterBtn">搜尋</button>
+
+    <div id="summary">
+      搜尋結果概要會顯示在這裡
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     let map = L.map('map').setView([25.052963, 121.549764], 14); // 凱基總行中心
 
-    // OSM 底圖
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OSM contributors'
     }).addTo(map);
@@ -170,11 +185,7 @@
     let circle, branchMarker;
     let data = [];
 
-    // 載入實價登錄資料
-    fetch('markers.json')
-      .then(r => r.json())
-      .then(d => { data = d; showMarkers(data); });
-
+    // 顯示 marker 函式
     function showMarkers(items, color = "red") {
       markersLayer.clearLayers();
       items.forEach(item => {
@@ -199,62 +210,87 @@
       });
     }
 
-    // 計算兩點間距離 (公里)
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const a = Math.sin(dLat/2)**2 +
+                Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+                Math.sin(dLon/2)**2;
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
-    // 篩選按鈕事件
-    document.getElementById('filterBtn').addEventListener('click', () => {
-      let branchVal = document.getElementById('branch').value;
-      let dist = parseFloat(document.getElementById('distance').value);
-
+    function filterAndShow(lat, lng, dist) {
       if (circle) map.removeLayer(circle);
       if (branchMarker) map.removeLayer(branchMarker);
 
-      if (branchVal && dist) {
-        let [lat, lng] = branchVal.split(',').map(Number);
+      const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
 
-        // 分行藍色標記
-        branchMarker = L.marker([lat, lng], {
-          icon: L.icon({
-            iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -28]
-          })
-        }).addTo(map).bindPopup("選擇的分行");
+      // 分行藍色 marker
+      branchMarker = L.marker([lat, lng], {
+        icon: L.icon({
+          iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -28]
+        })
+      }).addTo(map).bindPopup("選擇的分行").openPopup();
 
-        // 篩選範圍內的紅色標記
-        let filtered = data.filter(item => 
-          getDistance(lat, lng, item.lat, item.lng) <= dist
-        );
-        showMarkers(filtered, "red");
+      // 篩選紅色 marker
+      let filtered = data.filter(item => 
+        getDistance(lat, lng, item.lat, item.lng) <= dist &&
+        item.avg_tot_price >= minPrice
+      );
+      showMarkers(filtered, "red");
 
-        // 畫圓
-        circle = L.circle([lat, lng], { radius: dist * 1000, color: "blue", fillOpacity: 0.1 });
-        circle.addTo(map);
+      // 畫圓
+      circle = L.circle([lat, lng], { radius: dist * 1000, color: "blue", fillOpacity: 0.1 }).addTo(map);
 
-        map.setView([lat, lng], 14);
-
-        if (filtered.length === 0) {
-          alert("此範圍內無實價登錄資料");
-        }
+      // 更新概要
+      const summaryDiv = document.getElementById('summary');
+      if (filtered.length > 0) {
+        const avgPrice = Math.round(filtered.reduce((sum, i) => sum + i.avg_tot_price, 0) / filtered.length);
+        const maxPrice = Math.max(...filtered.map(i => i.avg_tot_price));
+        const minPriceVal = Math.min(...filtered.map(i => i.avg_tot_price));
+        summaryDiv.innerHTML = `
+          搜尋結果：${filtered.length} 筆<br>
+          平均交易總價：${avgPrice.toLocaleString()} 元<br>
+          交易總價區間：${minPriceVal.toLocaleString()} ~ ${maxPrice.toLocaleString()} 元
+        `;
       } else {
-        showMarkers(data, "red");
+        summaryDiv.innerHTML = "此範圍內無實價登錄資料";
+      }
+
+      map.setView([lat, lng], 14);
+    }
+
+    // 讀取 markers.json
+    fetch('markers.json')
+      .then(r => r.json())
+      .then(d => {
+        data = d;
+
+        // 初始自動篩選總行
+        const branchSelect = document.getElementById('branch');
+        branchSelect.value = "25.052963,121.549764"; 
+        document.getElementById('distance').value = 3;
+
+        filterAndShow(25.052963, 121.549764, 3);
+      });
+
+    // 篩選按鈕事件
+    document.getElementById('filterBtn').addEventListener('click', () => {
+      const branchVal = document.getElementById('branch').value;
+      const dist = parseFloat(document.getElementById('distance').value);
+      if (branchVal && dist) {
+        const [lat, lng] = branchVal.split(',').map(Number);
+        filterAndShow(lat, lng, dist);
       }
     });
 
     // 側邊欄顯示/隱藏
     document.getElementById('menuBtn').addEventListener('click', () => {
-      let sidebar = document.getElementById('sidebar');
+      const sidebar = document.getElementById('sidebar');
       sidebar.style.display = sidebar.style.display === "none" ? "block" : "none";
     });
   </script>
