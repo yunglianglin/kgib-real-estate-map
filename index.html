@@ -54,7 +54,7 @@
     #sidebar h2 {
       font-size: 16px;
       margin-top: 20px;   /* 與上方區塊的距離 */
-      margin-bottom: 8px; /* 與下方內容的距離 */
+      margin-bottom: 4px; /* 與下方內容的距離 */
       border-bottom: 1px solid #ddd;
       padding-bottom: 4px;
       color: #333;
@@ -71,7 +71,7 @@
     }
 
     #sidebar button {
-      background-color: #007bff;
+      background-color: #f7f7f7;
       color: white;
       border: none;
       cursor: pointer;
@@ -114,9 +114,6 @@
     <label>選擇分行</label>
     <select id="branch">
       <option value="">-- 選擇分行 --</option>
-      <optgroup label="基隆">
-        <option value="25.1210382,121.7215944">基隆分行</option>
-      </optgroup>
       <optgroup label="台北">
         <option value="25.0452783,121.5764971">松山分行</option>
         <option value="25.080456,121.5649951">瑞光分行</option>
@@ -145,29 +142,11 @@
         <option value="24.9909839,121.3082984">桃園分行</option>
         <option value="25.0162507,121.2995099">藝文分行</option>
         <option value="24.957258,121.2240547">中壢分行</option>
-      </optgroup>
-      <optgroup label="新竹">
-        <option value="24.7820167,121.0207938">竹科分行</option>
-        <option value="24.8047294,120.9697169">風城分行</option>
-        <option value="24.7975194,120.969624">南大分行</option>
-        <option value="24.8102237,120.9579519">新竹分行</option>        
-      </optgroup>
-      <optgroup label="苗栗">
-        <option value="24.5680259,120.824352">苗栗分行</option>
-      </optgroup>
       <optgroup label="台中">
         <option value="24.2486531,120.7150242">豐原分行</option>
         <option value="24.1105192,120.6897582">大里分行</option>
         <option value="24.1521197,120.6686217">台中分行</option>
         <option value="24.159102,120.6395803">市政分行</option>        
-      </optgroup>
-      <optgroup label="彰化">
-        <option value="23.9583382,120.5664658">員林分行</option>
-        <option value="24.0727349,120.5371178">彰化分行</option>
-      </optgroup>
-      <optgroup label="嘉義">
-        <option value="23.4757561099672,120.444502830685">嘉義分行</option>
-      </optgroup>
       <optgroup label="台南">
         <option value="22.9657668,120.2941752">歸仁分行</option>
         <option value="22.9991343,120.234277">永康分行</option>
@@ -183,18 +162,6 @@
         <option value="22.619533,120.3087674">高雄分行</option>
         <option value="22.6653243,120.3032502">左營分行</option>
         <option value="22.6615699,120.2894257">高美館分行</option>
-      </optgroup>
-      <optgroup label="屏東">
-        <option value="22.6826648,120.4989467">屏東分行</option>
-      </optgroup>
-      <optgroup label="宜蘭">
-        <option value="24.6780719,121.7730545">羅東分行</option>
-      </optgroup>
-      <optgroup label="花蓮">
-        <option value="23.9780816,121.6089386">花蓮分行</option>
-      </optgroup>
-      <optgroup label="台東">
-        <option value="22.754526,121.1534571">台東分行</option>
       </optgroup>
     </select>
 
@@ -294,13 +261,13 @@
       // 更新概要
       const summaryDiv = document.getElementById('summary');
       if (filtered.length > 0) {
-        const avgPrice = Math.round(filtered.reduce((sum, i) => sum + i.avg_tot_price, 0) / filtered.length);
-        const maxPrice = Math.max(...filtered.map(i => i.avg_tot_price));
-        const minPriceVal = Math.min(...filtered.map(i => i.avg_tot_price));
+        const avgPrice = Math.round((filtered.reduce((sum, i) => sum + i.avg_tot_price, 0) / filtered.length)/10000);
+        const maxPrice = Math.max(...filtered.map(i => i.avg_tot_price)/10000);
+        const minPriceVal = Math.min(...filtered.map(i => i.avg_tot_price)/10000);
         summaryDiv.innerHTML = `
           搜尋結果：${filtered.length} 筆<br>
-          平均交易總價：${avgPrice.toLocaleString()} 元<br>
-          交易總價區間：${minPriceVal.toLocaleString()} ~ ${maxPrice.toLocaleString()} 元
+          平均交易總價：${avgPrice.toLocaleString()} 萬萬元<br>
+          交易總價區間：${minPriceVal.toLocaleString()} ~ ${maxPrice.toLocaleString()} 萬元
         `;
       } else {
         summaryDiv.innerHTML = "此範圍內無實價登錄資料";
