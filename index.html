@@ -52,7 +52,7 @@
       z-index: 1000;
     }
 
-    #sidebar h2 {
+    #sidebar h3 {
       font-size: 16px;
       margin-top: 12px;   /* 與上方區塊的距離 */
       margin-bottom: 3px; /* 與下方內容的距離 */
@@ -62,7 +62,7 @@
     }
 
     /* 第一個標題（豪宅定義）去掉 margin-top */
-    #sidebar h2:first-of-type {
+    #sidebar h3:first-of-type {
       margin-top: 0;
     }
 
@@ -271,12 +271,12 @@
       // 更新概要
       const summaryDiv = document.getElementById('summary');
       if (filtered.length > 0) {
-        const avgPrice = Math.round((filtered.reduce((sum, i) => sum + i.avg_tot_price, 0) / filtered.length)/10000);
-        const maxPrice = Math.max(...filtered.map(i => i.avg_tot_price)/10000);
-        const minPriceVal = Math.min(...filtered.map(i => i.avg_tot_price)/10000);
+        const avgPrice = Math.round(filtered.reduce((sum, i) => sum + i.avg_tot_price, 0) / filtered.length / 10000);
+        const maxPrice = Math.max(...filtered.map(i => i.avg_tot_price / 10000));
+        const minPriceVal = Math.min(...filtered.map(i => i.avg_tot_price / 10000));
         summaryDiv.innerHTML = `
           搜尋結果：${filtered.length} 筆<br>
-          平均交易總價：${avgPrice.toLocaleString()} 萬萬元<br>
+          平均交易總價：${avgPrice.toLocaleString()} 萬元<br>
           交易總價區間：${minPriceVal.toLocaleString()} ~ ${maxPrice.toLocaleString()} 萬元
         `;
       } else {
