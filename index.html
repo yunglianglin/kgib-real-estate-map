@@ -247,6 +247,7 @@
         currentDist = dist;             // 存起來
       const minPriceInput = parseFloat(document.getElementById('minPrice').value) || 0;
       const minPrice = minPriceInput * 10000;
+        currentminPrice = minPriceInput
 
       // 分行藍色 marker
       branchMarker = L.marker([lat, lng], {
@@ -267,6 +268,9 @@
 
        // 篩選按鈕事件中加入 filteredData = filtered
       filteredData = filtered;
+      
+      // 畫圓 debug
+      console.log(">>> 畫圓 debug:", branchName, "dist=", dist, "lat=", lat, "lng=", lng);
 
       // 畫圓
       circle = L.circle([lat, lng], { radius: dist * 1000, color: "blue", fillOpacity: 0.1 }).addTo(map);
@@ -297,7 +301,7 @@
 
         // 初始自動篩選總行
         const branchSelect = document.getElementById('branch');
-        branchSelect.value = "25.052963,121.549764"; 
+        branchSelect.value = "25.054978401985,121.54935302295"; 
         document.getElementById('distance').value = 1;
 
         filterAndShow(25.054978401985,121.54935302295, 1, "敦北分行");
@@ -324,7 +328,7 @@
         filteredData.forEach(item=>{
           csv+=`${currentBranchName},${currentDist},"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
         });
-        const fileName =`${currentBranchName}_${currentDist}公里_${minPrice}萬以上.csv`;
+        const fileName =`${currentBranchName}_${currentDist}公里_${currentminPrice}萬以上.csv`;
 
         let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         let url = URL.createObjectURL(blob);
