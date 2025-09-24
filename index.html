@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>凱基銀行 豪宅實價登錄地圖</title>
+  <title>六都豪宅實價登錄地圖</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
@@ -201,6 +201,8 @@
     let circle, branchMarker;
     let data = [];
     let filteredData = []; 
+    let currentBranchName = "";
+    let currentDist = 0;
 
     // 顯示 marker 函式
     function showMarkers(items, color = "red") {
@@ -219,7 +221,7 @@
         marker.bindPopup(`
           <b>地址：</b>${item.address}<br>
           <b>平均交易總價(近五年)：</b>${item.avg_tot_price.toLocaleString()} 元<br>
-          <b>每坪地價(近五年)：</b>${item.avg_price_pin.toLocaleString()} 元/坪<br>
+          <b>每坪房價(近五年)：</b>${item.avg_price_pin.toLocaleString()} 元/坪<br>
           <b>交易總價區間：</b>${item.min_trx_amt.toLocaleString()} ~ ${item.max_trx_amt.toLocaleString()} 元<br>
           <b>交易次數(近五年)：</b>${item.trx_cnt_5_yrs} 次<br>
           <b>最新交易日期：</b>${item.lst_trx_dte_5_yrs}<br>
@@ -241,6 +243,8 @@
       if (circle) map.removeLayer(circle);
       if (branchMarker) map.removeLayer(branchMarker);
 
+        currentBranchName = branchName; // 存起來
+        currentDist = dist;             // 存起來
       const minPriceInput = parseFloat(document.getElementById('minPrice').value) || 0;
       const minPrice = minPriceInput * 10000;
 
@@ -294,9 +298,9 @@
         // 初始自動篩選總行
         const branchSelect = document.getElementById('branch');
         branchSelect.value = "25.052963,121.549764"; 
-        document.getElementById('distance').value = 3;
+        document.getElementById('distance').value = 1;
 
-        filterAndShow(25.052963, 121.549764, 1, "凱基總行");
+        filterAndShow(25.054978401985,121.54935302295, 1, "敦北分行");
       });
 
     // 篩選按鈕事件
@@ -316,15 +320,17 @@
           alert("目前沒有篩選結果可下載"); 
           return; 
         }
-        let csv = "地址,平均交易總價,每坪地價,交易總價區間,交易次數,最新交易日期\n";
+        let csv = "分行名稱,距離(公里),地址,平均交易總價,每坪房價,交易總價區間,交易次數,最新交易日期\n";
         filteredData.forEach(item=>{
-          csv+=`"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
+          csv+=`${currentBranchName},${currentDist},"${item.address}",${item.avg_tot_price},${item.avg_price_pin},"${item.min_trx_amt}~${item.max_trx_amt}",${item.trx_cnt_5_yrs},${item.lst_trx_dte_5_yrs}\n`;
         });
+        const fileName =`${currentBranchName}_${currentDist}公里_${minPrice}萬以上.csv`;
+
         let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = '篩選結果.csv';
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
