@@ -117,12 +117,16 @@
       台北市：6,000萬元以上<br>
       新北市：4,000萬元以上<br>
       桃園/台中/台南/高雄市：3,000萬元以上
+      其他縣市：2,200萬元以上
     </div>
 
     <h3>🔎 搜尋條件</h3>
     <label>選擇分行</label>
     <select id="branch">
       <option value="">-- 選擇分行 --</option>
+      <optgroup label="基隆">
+        <option value="25.1210382,121.7215944">基隆分行</option>
+      </optgroup>
       <optgroup label="台北">
         <option value="25.0452783,121.5764971">松山分行</option>
         <option value="25.080456,121.5649951">瑞光分行</option>
@@ -151,11 +155,29 @@
         <option value="24.9909839,121.3082984">桃園分行</option>
         <option value="25.0162507,121.2995099">藝文分行</option>
         <option value="24.957258,121.2240547">中壢分行</option>
+      </optgroup>
+      <optgroup label="新竹">
+        <option value="24.7820167,121.0207938">竹科分行</option>
+        <option value="24.8047294,120.9697169">風城分行</option>
+        <option value="24.7975194,120.969624">南大分行</option>
+        <option value="24.8102237,120.9579519">新竹分行</option>        
+      </optgroup>
+      <optgroup label="苗栗">
+        <option value="24.5680259,120.824352">苗栗分行</option>
+      </optgroup>
       <optgroup label="台中">
         <option value="24.2486531,120.7150242">豐原分行</option>
         <option value="24.1105192,120.6897582">大里分行</option>
         <option value="24.1521197,120.6686217">台中分行</option>
-        <option value="24.159102,120.6395803">市政分行</option>        
+        <option value="24.159102,120.6395803">市政分行</option>
+      </optgroup>
+      <optgroup label="彰化">
+        <option value="23.9583382,120.5664658">員林分行</option>
+        <option value="24.0727349,120.5371178">彰化分行</option>
+      </optgroup>
+      <optgroup label="嘉義">
+        <option value="23.4757561099672,120.444502830685">嘉義分行</option>
+      </optgroup>          
       <optgroup label="台南">
         <option value="22.9657668,120.2941752">歸仁分行</option>
         <option value="22.9991343,120.234277">永康分行</option>
@@ -172,6 +194,18 @@
         <option value="22.6653243,120.3032502">左營分行</option>
         <option value="22.6615699,120.2894257">高美館分行</option>
       </optgroup>
+      <optgroup label="屏東">
+        <option value="22.6826648,120.4989467">屏東分行</option>
+      </optgroup>
+      <optgroup label="宜蘭">
+        <option value="24.6780719,121.7730545">羅東分行</option>
+      </optgroup>
+      <optgroup label="花蓮">
+        <option value="23.9780816,121.6089386">花蓮分行</option>
+      </optgroup>
+      <optgroup label="台東">
+        <option value="22.754526,121.1534571">台東分行</option>
+      </optgroup>      
     </select>
 
     <label>距離 (公里)</label>
@@ -302,9 +336,9 @@
         // 初始自動篩選總行
         const branchSelect = document.getElementById('branch');
         branchSelect.value = "25.054978401985,121.54935302295"; 
-        document.getElementById('distance').value = 1;
+        document.getElementById('distance').value = 3;
 
-        filterAndShow(25.054978401985,121.54935302295, 1, "敦北分行");
+        filterAndShow(25.054978401985,121.54935302295, 3, "敦北分行");
       });
 
     // 篩選按鈕事件
