@@ -116,7 +116,7 @@
     <div style="font-size:14px; margin-bottom:10px; line-height:1.5; color:#333; padding:8px; background:#f9f9f9; border-radius:8px;">
       台北市：6,000萬元以上<br>
       新北市：4,000萬元以上<br>
-      桃園/台中/台南/高雄市：3,000萬元以上
+      桃園/台中/台南/高雄市：3,000萬元以上<br>
       其他縣市：2,200萬元以上
     </div>
 
@@ -254,9 +254,9 @@
 
         marker.bindPopup(`
           <b>地址：</b>${item.address}<br>
-          <b>平均交易總價(近五年)：</b>${item.avg_tot_price.toLocaleString()} 元<br>
-          <b>每坪房價(近五年)：</b>${item.avg_price_pin.toLocaleString()} 元/坪<br>
-          <b>交易總價區間：</b>${item.min_trx_amt.toLocaleString()} ~ ${item.max_trx_amt.toLocaleString()} 元<br>
+          <b>平均交易總價(近五年)：</b>${(item.avg_tot_price/10000).toLocaleString()} 萬元<br>
+          <b>每坪房價(近五年)：</b>${(item.avg_price_pin/10000).toLocaleString()} 萬元/坪<br>
+          <b>交易總價區間：</b>${(item.min_trx_amt/10000).toLocaleString()} ~ ${(item.max_trx_amt/10000).toLocaleString()} 萬元<br>
           <b>交易次數(近五年)：</b>${item.trx_cnt_5_yrs} 次<br>
           <b>最新交易日期：</b>${item.lst_trx_dte_5_yrs}<br>
         `);
@@ -336,9 +336,9 @@
         // 初始自動篩選總行
         const branchSelect = document.getElementById('branch');
         branchSelect.value = "25.054978401985,121.54935302295"; 
-        document.getElementById('distance').value = 3;
+        document.getElementById('distance').value = 2;
 
-        filterAndShow(25.054978401985,121.54935302295, 3, "敦北分行");
+        filterAndShow(25.054978401985,121.54935302295, 2, "敦北分行");
       });
 
     // 篩選按鈕事件
